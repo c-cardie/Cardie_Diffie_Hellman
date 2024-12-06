@@ -75,7 +75,7 @@ key = sha256(str(key).encode()).digest()[:16]
 #enter a message to be encrypted and encrypt it
 #(from https://www.youtube.com/watch?v=GYCVmMCRmTM)
 nonce, ciphertext, tag = AESencrypt(input('Enter a message: '))
-#decrypt
+#decrypt (from https://www.youtube.com/watch?v=GYCVmMCRmTM)
 plaintext = AESdecrypt(nonce, ciphertext, tag)
 #print encrypted message and decrypted message
 print ("ciphtertext = ", ciphertext)

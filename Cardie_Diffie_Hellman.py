@@ -3,7 +3,6 @@ from Crypto.Util import number
 from sympy import primitive_root
 import random
 from Crypto.Cipher import AES
-#from hashlib import sha256
 
 #Diffie Hellman portion
 

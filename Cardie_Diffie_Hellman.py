@@ -56,6 +56,8 @@ def diffie_hellman():
 #using key from Diffie-Hellman to encrypt a message in AES
 #using CBC mode for AES
 
+#padding functions based off:
+#https://medium.com/bootdotdev/aes-256-cipher-python-cryptography-examples-b877b9d2e45e
 def pad(plaintext):
 
   #each block is 16 bytes

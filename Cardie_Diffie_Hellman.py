@@ -65,13 +65,13 @@ def pad(plaintext):
   #no of spaces determined by padding_needed
   return plaintext + padding_needed * ' '
 
-s = pad("Claire")
+#s = pad("Claire")
 
 #removes whitespace from padding
 def unpad(plaintext):
   return plaintext.rstrip()
 
-print(unpad(s))
+#print(unpad(s))
 
 def encrypt(key, plaintext):
 
@@ -80,13 +80,13 @@ def encrypt(key, plaintext):
   IV = random.randbytes(16)
 
   padded_plaintext = pad(plaintext)
-  print("padded_plaintext = ", padded_plaintext)
+  #print("padded_plaintext = ", padded_plaintext)
 
   #convert integer key passed in by diffie hellman
   #to a 16-byte string
   #to be useed by AES.new
   key_to_bytes = key.to_bytes(16)
-  print("key_to_bytes = ", key_to_bytes)
+  #print("key_to_bytes = ", key_to_bytes)
   
   #create cipher
   #algorithm used to encrypt and decrypt the message
@@ -94,7 +94,7 @@ def encrypt(key, plaintext):
 
   #change plaintext to bytes
   plaintext_to_bytes = padded_plaintext.encode('utf-8')
-  print("plaintext_to_bytes = ", plaintext_to_bytes)
+  #print("plaintext_to_bytes = ", plaintext_to_bytes)
 
   #encrypt the plaintext
   ciphertext = cipher.encrypt(plaintext_to_bytes)
@@ -103,10 +103,10 @@ def encrypt(key, plaintext):
   return ciphertext, IV, key_to_bytes
 
 
-ciphertext, IV, key_to_bytes = encrypt(6, "Claire")
-print("ciphertext = ", ciphertext)
-print("IV = ", IV)
-print("key_to_bytes = ", key_to_bytes)
+
+#print("ciphertext = ", ciphertext)
+#print("IV = ", IV)
+#print("key_to_bytes = ", key_to_bytes)
 
 def decrypt(ciphertext, IV, key_to_bytes):
   print("IV = ", IV)
@@ -117,14 +117,16 @@ def decrypt(ciphertext, IV, key_to_bytes):
   #decrypt the ciphertext
   #turns into plaintext in its byte form
   plaintext_still_bytes = cipher.decrypt(ciphertext)
-  print("plaintext_still_bytes = ", plaintext_still_bytes)
+  #print("plaintext_still_bytes = ", plaintext_still_bytes)
   padded_plaintext = plaintext_still_bytes.decode('utf-8')
-  print("padded_plaintext = ", padded_plaintext)
+  #print("padded_plaintext = ", padded_plaintext)
   plaintext = unpad(padded_plaintext)
   print("plaintext = ", plaintext)
 
-  return
+  return plaintext
 
+key = diffie_hellman()
+ciphertext, IV, key_to_bytes = encrypt(key, "Claire")
 decrypt(ciphertext, IV, key_to_bytes)
   
   

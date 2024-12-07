@@ -3,7 +3,9 @@ from Crypto.Util import number
 from sympy import primitive_root
 import random
 from Crypto.Cipher import AES
-from hashlib import sha256
+#from hashlib import sha256
+
+#Diffie Hellman portion
 
 #returns an n-bit prime number
 def n_bit_prime(n):
@@ -11,6 +13,9 @@ def n_bit_prime(n):
 
 #returns k: the shared secret
 def diffie_hellman():
+
+  print("doing Diffie Hellman key exchange")
+  
 #p is the the n-bit prime number
   p = n_bit_prime(128)
 
@@ -45,15 +50,16 @@ def diffie_hellman():
 
   #storing shared secret
   k = random.choice([ka, kb])
-  print("shared key: ", k)
+  print("shared key to be used by AES: ", k)
 
   return k
 
 #using key from Diffie-Hellman to encrypt a message in AES
 #using CBC mode for AES
+
 def pad(plaintext):
 
-  #each block is 16 bits
+  #each block is 16 bytes
   #because the key is 128 bits
   block_size = 16
 
@@ -62,31 +68,29 @@ def pad(plaintext):
   padding_needed = block_size - remainder
 
   #return plaintext concatenated w/ spaces
-  #no of spaces determined by padding_needed
+  #number of spaces determined by padding_needed
   return plaintext + padding_needed * ' '
 
-#s = pad("Claire")
 
 #removes whitespace from padding
 def unpad(plaintext):
   return plaintext.rstrip()
 
-#print(unpad(s))
-
+#encrypt with AES
 def encrypt(key, plaintext):
+
+  print("Entering AES encryption function")
 
   #IV is like a salt for the vector
   #must be the same size as the block size
   IV = random.randbytes(16)
 
   padded_plaintext = pad(plaintext)
-  #print("padded_plaintext = ", padded_plaintext)
 
   #convert integer key passed in by diffie hellman
   #to a 16-byte string
   #to be useed by AES.new
   key_to_bytes = key.to_bytes(16)
-  #print("key_to_bytes = ", key_to_bytes)
   
   #create cipher
   #algorithm used to encrypt and decrypt the message
@@ -94,7 +98,6 @@ def encrypt(key, plaintext):
 
   #change plaintext to bytes
   plaintext_to_bytes = padded_plaintext.encode('utf-8')
-  #print("plaintext_to_bytes = ", plaintext_to_bytes)
 
   #encrypt the plaintext
   ciphertext = cipher.encrypt(plaintext_to_bytes)
@@ -103,13 +106,10 @@ def encrypt(key, plaintext):
   return ciphertext, IV, key_to_bytes
 
 
-
-#print("ciphertext = ", ciphertext)
-#print("IV = ", IV)
-#print("key_to_bytes = ", key_to_bytes)
-
 def decrypt(ciphertext, IV, key_to_bytes):
-  print("IV = ", IV)
+
+  print("decrypting...")
+  
   #create a new cipher for decryption
   #uses all the same info as the cipher from the encryption
   cipher = AES.new(key_to_bytes, AES.MODE_CBC, IV)
@@ -117,16 +117,17 @@ def decrypt(ciphertext, IV, key_to_bytes):
   #decrypt the ciphertext
   #turns into plaintext in its byte form
   plaintext_still_bytes = cipher.decrypt(ciphertext)
-  #print("plaintext_still_bytes = ", plaintext_still_bytes)
   padded_plaintext = plaintext_still_bytes.decode('utf-8')
-  #print("padded_plaintext = ", padded_plaintext)
   plaintext = unpad(padded_plaintext)
   print("plaintext = ", plaintext)
 
   return plaintext
 
+#main
 key = diffie_hellman()
-ciphertext, IV, key_to_bytes = encrypt(key, "Claire")
+print()
+ciphertext, IV, key_to_bytes = encrypt(key, input("insert a message to encrypt: "))
+print()
 decrypt(ciphertext, IV, key_to_bytes)
   
   
@@ -159,35 +160,6 @@ decrypt(ciphertext, IV, key_to_bytes)
 
 
 
-#encryption function from https://www.youtube.com/watch?v=GYCVmMCRmTM
-#def AESencrypt(message):
-#  cipher = AES.new(key, AES.MODE_EAX)
- # nonce = cipher.nonce
- # ciphertext, tag = cipher.encrypt_and_digest(message.encode('ascii'))
- # return nonce, ciphertext, tag
-
-#decryption function from https://www.youtube.com/watch?v=GYCVmMCRmTM
-#def AESdecrypt(nonce, ciphertext, tag):
- # cipher = AES.new(key, AES.MODE_EAX, nonce = nonce)
- # plaintext = cipher.decrypt(ciphertext)
- # return plaintext.decode('ascii')
-
-
-
-#key to encrypt in AES
-#key = diffie_hellman()
-
-#make key into a 16 byte sequence to be used in AES
-#key = sha256(str(key).encode()).digest()[:16]
-
-#enter a message to be encrypted and encrypt it
-#(from https://www.youtube.com/watch?v=GYCVmMCRmTM)
-#nonce, ciphertext, tag = AESencrypt(input('Enter a message: '))
-#decrypt (from https://www.youtube.com/watch?v=GYCVmMCRmTM)
-#plaintext = AESdecrypt(nonce, ciphertext, tag)
-#print encrypted message and decrypted message
-#print ("ciphtertext = ", ciphertext)
-#print("plaintext = ", plaintext)
 
 
 
